@@ -6,6 +6,22 @@ import requests
 scraper = cloudscraper.create_scraper()
 
 
+# append data from data and data_vf to result with limit and sort by param
+def append_data(data, data_vf, limit=10, sort=None, param=None):
+    result = []
+    for anime in data:
+        result.append(anime)
+        # add tag vf
+        result[-1]['vf'] = False
+    for anime in data_vf:
+        result.append(anime)
+        # add tag vf
+        result[-1]['vf'] = True
+    if sort:
+        result = sorted(result, key=lambda k: k[param], reverse=True)
+    return result[:limit]
+
+
 # get data from the https://neko-sama.fr/animes-search-vostfr.json
 def get_data():
     url = 'https://neko-sama.fr/animes-search-vostfr.json'
@@ -35,21 +51,65 @@ def get_anime_info(url):
     episodes = html.split('var episodes = ')[1].split(';')[0]
     # remove anti slash
     episodes = episodes.replace('\\', '')
-    # print(episodes)
-
-
-    # episodeList = []
-    # for row in episodes:
-    #     episode = {
-    #         'time': row.select_one('div[itemprop="duration"]').text.strip(),
-    #         'episode': row.select_one('div.episode').text.strip(),
-    #         'num': row.select_one('div.num').text.strip(),
-    #         'title': row.select_one('div.title').text.strip(),
-    #         'url': row.select_one('div.title a').get('href'),
-    #         'url_image': row.select_one('div.img img').get('src')
-    #     }
-    #     episodeList.append(episode)
     return {'synopsis': synopsis, 'trailer': trailer, 'banner': banner, 'episodes': json.loads(episodes)}
+
+
+# search anime
+def search_anime(name, data=None, data_vf=None):
+    if data is None:
+        data = get_data()
+    if data_vf is None:
+        data_vf = get_data_vf()
+    result = []
+    for anime in data:
+        if name.lower() in anime['title'].lower():
+            result.append(anime)
+            # add tag vf
+            result[-1]['vf'] = False
+    for anime in data_vf:
+        if name.lower() in anime['title'].lower():
+            result.append(anime)
+            # add tag vf
+            result[-1]['vf'] = True
+    return result
+
+
+# filter anime by genre
+def filter_anime(genre, data=None, data_vf=None):
+    if data is None:
+        data = get_data()
+    if data_vf is None:
+        data_vf = get_data_vf()
+    result = []
+    for anime in data:
+        if genre in anime['genres']:
+            result.append(anime)
+            # add tag vf
+            result[-1]['vf'] = False
+    for anime in data_vf:
+        if genre in anime['genres']:
+            result.append(anime)
+            # add tag vf
+            result[-1]['vf'] = True
+    return result
+
+
+# get popular anime
+def get_popular(data=None, data_vf=None, limit=10):
+    if data is None:
+        data = get_data()
+    if data_vf is None:
+        data_vf = get_data_vf()
+    return append_data(data, data_vf, limit, True, 'popularity')
+
+
+# get anime by score
+def get_by_score(data=None, data_vf=None, limit=10):
+    if data is None:
+        data = get_data()
+    if data_vf is None:
+        data_vf = get_data_vf()
+    return append_data(data, data_vf, limit, True, 'score')
 
 
 
