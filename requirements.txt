@@ -1,0 +1,7 @@
+flask
+Flask-Cors
+pymongo
+python-dotenv
+pydantic
+cloudscraper
+python-dotenv
