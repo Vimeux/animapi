@@ -8,7 +8,7 @@ Ce projet avancera au cours du temps en fonction de mon temps libre
 
 ## Installation
 
-### préparation venv
+### Préparation venv
 
 ```
 python3 -m venv venv
@@ -21,7 +21,7 @@ source venv/bin/activate
 pip install -r requirements.txt
 ```
 
-### Lancement du serveur
+### Lancement du serveur Flask
 
 ```
 flask --app app run
